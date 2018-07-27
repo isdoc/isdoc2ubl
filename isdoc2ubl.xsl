@@ -52,7 +52,8 @@
       
       <xsl:apply-templates select="AccountingSupplierParty"/>
       
-        
+      <xsl:apply-templates select="AccountingCustomerParty"/>
+      
       
     </invoice:Invoice>
     
@@ -73,45 +74,24 @@
       <xsl:apply-templates select="Party"/>
     </cac:AccountingSupplierParty>
   </xsl:template>
+
+  <xsl:template match="AccountingCustomerParty">
+    <cac:AccountingCustomerParty>
+      <xsl:apply-templates select="Party"/>
+    </cac:AccountingCustomerParty>
+  </xsl:template>
   
   <xsl:template match="Party">
     <cac:Party>
-      <xsl:apply-templates select="Contact/ElectronicMail"/>
       <xsl:apply-templates select="PartyIdentification"/>
       <xsl:apply-templates select="PartyName"/>
-      <!-- 
-PartyName
-PartyName/Name
-PostalAddress
-PostalAddress/StreetName
-PostalAddress/BuildingNumber
-PostalAddress/CityName
-PostalAddress/PostalZone
-PostalAddress/Country
-PostalAddress/Country/IdentificationCode
-PostalAddress/Country/Name
-PartyTaxScheme
-PartyTaxScheme/CompanyID
-PartyTaxScheme/TaxScheme
-RegisterIdentification
-RegisterIdentification/RegisterKeptAt
-RegisterIdentification/RegisterFileRef
-RegisterIdentification/RegisterDate
-RegisterIdentification/Preformatted
-Contact
-Contact/Name
-Contact/Telephone
--->
+      <xsl:apply-templates select="PostalAddress"/>
+      <xsl:apply-templates select="PartyTaxScheme"/>
+      <xsl:apply-templates select="RegisterIdentification"/>
+      <xsl:apply-templates select="Contact"/>
     </cac:Party>
   </xsl:template>
 
-  <xsl:template match="ElectronicMail">
-    <cbc:EndpointID schemeID="EMAIL">{.}</cbc:EndpointID>
-    <!-- FIXME: Find code list specifing schemaID values 
-         "EMAIL" is used in example in CEN TS 16931-3-2 but CEF should be maintaining and providing actual codelist 
-    -->
-  </xsl:template>
-  
   <xsl:template match="PartyIdentification">
     <cac:PartyIdentification>
       <cbc:ID schemeID="FIXME">{ID}</cbc:ID>
@@ -134,5 +114,94 @@ Contact/Telephone
   <xsl:template match="Name">
     <cbc:Name>{.}</cbc:Name>
   </xsl:template>
+  
+  <xsl:template match="PostalAddress">
+    <cac:PostalAddress>
+      <xsl:apply-templates select="StreetName"/>
+      <xsl:apply-templates select="CityName"/>
+      <xsl:apply-templates select="PostalZone"/>
+      <xsl:apply-templates select="Country"/>
+    </cac:PostalAddress>
+  </xsl:template>
+  
+  <xsl:template match="StreetName">
+    <cbc:StreetName>
+      <xsl:value-of select="."/>
+      <xsl:if test="following-sibling::BuildingNumber">
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="following-sibling::BuildingNumber"/>
+      </xsl:if>
+    </cbc:StreetName>
+  </xsl:template>
+  
+  <xsl:template match="CityName">
+    <cbc:CityName>{.}</cbc:CityName>
+  </xsl:template>
+  
+  <xsl:template match="PostalZone">
+    <cbc:PostalZone>{.}</cbc:PostalZone>
+  </xsl:template>
+  
+  <xsl:template match="Country">
+    <cac:Country>
+      <xsl:apply-templates select="IdentificationCode"/>
+    </cac:Country>
+  </xsl:template>
+  
+  <xsl:template match="IdentificationCode">
+    <cbc:IdentificationCode>{.}</cbc:IdentificationCode>
+  </xsl:template>
+  
+  <xsl:template match="PartyTaxScheme">
+    <cac:PartyTaxScheme>
+      <xsl:apply-templates select="CompanyID"/>
+      <xsl:apply-templates select="TaxScheme"/>
+    </cac:PartyTaxScheme>
+  </xsl:template>
+  
+  <xsl:template match="CompanyID">
+    <cbc:CompanyID>{.}</cbc:CompanyID>
+  </xsl:template>
+  
+  <xsl:template match="TaxScheme">
+    <cac:TaxScheme>
+      <cbc:ID>{.}</cbc:ID>
+    </cac:TaxScheme>
+  </xsl:template>
+  
+  <xsl:template match="Contact">
+    <cac:Contact>
+      <xsl:apply-templates select="Name"/>
+      <xsl:apply-templates select="Telephone"/>
+      <xsl:apply-templates select="ElectronicMail"/>
+    </cac:Contact>
+  </xsl:template>
+  
+  <xsl:template match="Telephone">
+    <cbc:Telephone>{.}</cbc:Telephone>
+  </xsl:template>
 
+  <xsl:template match="ElectronicMail">
+    <cbc:ElectronicMail>{.}</cbc:ElectronicMail>
+  </xsl:template>
+  
+  <xsl:template match="RegisterIdentification">
+    <cac:PartyLegalEntity>
+      <xsl:apply-templates select="RegisterDate"/>
+      <!-- 
+        FIXME: how to represent these
+        RegisterIdentification/RegisterFileRef
+        RegisterIdentification/RegisterKeptAt
+        RegisterIdentification/Preformatted
+      -->
+      <xsl:if test="RegisterFileRef | RegisterKeptAt | Preformatted">
+        <xsl:message>Skipping elements RegisterFileRef, RegisterKeptAt and Preformatted.</xsl:message>
+      </xsl:if>
+    </cac:PartyLegalEntity>
+  </xsl:template>
+  
+  <xsl:template match="RegisterDate">
+    <cbc:RegistrationDate>{.}</cbc:RegistrationDate>
+  </xsl:template>
+  
 </xsl:stylesheet>
