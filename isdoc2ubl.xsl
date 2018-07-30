@@ -12,7 +12,7 @@
 
   <xsl:output indent="yes"></xsl:output>
   
-  <xsl:param name="verbose" select="true()"/>
+  <xsl:param name="verbose" select="true()" static="true"/>
 
   <xsl:template match="Invoice">
     <invoice:Invoice>
@@ -23,8 +23,8 @@
       
       <cbc:IssueDate>{IssueDate}</cbc:IssueDate>
       
-      <xsl:if test="$verbose and count(PaymentMeans/Payment/Details/PaymentDueDate) > 1">
-        <xsl:message>More payments due dates found. Using the earliest date in the output.</xsl:message>
+      <xsl:if test="count(PaymentMeans/Payment/Details/PaymentDueDate) > 1">
+        <xsl:message use-when="$verbose">More payments due dates found. Using the earliest date in the output.</xsl:message>
       </xsl:if>
       <cbc:DueDate>{min(PaymentMeans/Payment/Details/PaymentDueDate ! xs:date(.))}</cbc:DueDate>
       
@@ -37,8 +37,8 @@
                                  '5': '386' (: advance invoice (with VAT) :),
                                  '6': '381' (: credit note for advance invoice (with VAT) :)                                 
                                  }"/>
-      <xsl:if test="$verbose and not($document-types(DocumentType))">
-        <xsl:message>DocumentType {DocumentType} is not supported.</xsl:message>
+      <xsl:if test="not($document-types(DocumentType))">
+        <xsl:message use-when="$verbose">DocumentType {DocumentType} is not supported.</xsl:message>
       </xsl:if>
       <cbc:InvoiceTypeCode>{$document-types(DocumentType)}</cbc:InvoiceTypeCode>
       
@@ -52,6 +52,8 @@
       
       <xsl:apply-templates select="OrderReferences"/>
       
+      <xsl:apply-templates select="ContractReferences"/>
+      
       <xsl:apply-templates select="AccountingSupplierParty"/>
       
       <xsl:apply-templates select="AccountingCustomerParty"/>
@@ -59,6 +61,8 @@
       <xsl:apply-templates select="BuyerCustomerParty"/>
 
       <xsl:apply-templates select="SellerSupplierParty"/>
+      
+      <xsl:apply-templates select="Delivery"/>
       
     </invoice:Invoice>
     
@@ -115,11 +119,11 @@
     <cac:PartyIdentification>
       <cbc:ID schemeID="FIXME">{ID}</cbc:ID>
       <!-- FIXME: schemeID for IČO must be registered as ICD according to ISO/IEC 6523 -->
-      <xsl:if test="$verbose and UserID">
-        <xsl:message>Do not know how to map UserID into ICD identification scheme. Skipping element.</xsl:message>
+      <xsl:if test="UserID">
+        <xsl:message use-when="$verbose">Do not know how to map UserID into ICD identification scheme. Skipping element.</xsl:message>
       </xsl:if>
-      <xsl:if test="$verbose and CatalogFirmIdentification">
-        <xsl:message>Do not know how to map CatalogFirmIdentification into ICD identification scheme.  Skipping element.</xsl:message>
+      <xsl:if test="CatalogFirmIdentification">
+        <xsl:message use-when="$verbose">Do not know how to map CatalogFirmIdentification into ICD identification scheme.  Skipping element.</xsl:message>
       </xsl:if>
     </cac:PartyIdentification>
   </xsl:template>
@@ -141,6 +145,15 @@
       <xsl:apply-templates select="PostalZone"/>
       <xsl:apply-templates select="Country"/>
     </cac:PostalAddress>
+  </xsl:template>
+
+  <xsl:template match="Delivery/Party/PostalAddress" mode="PostalAddressAsAddress">
+    <cac:Address>
+      <xsl:apply-templates select="StreetName"/>
+      <xsl:apply-templates select="CityName"/>
+      <xsl:apply-templates select="PostalZone"/>
+      <xsl:apply-templates select="Country"/>
+    </cac:Address>
   </xsl:template>
   
   <xsl:template match="StreetName">
@@ -213,9 +226,7 @@
         RegisterIdentification/RegisterKeptAt
         RegisterIdentification/Preformatted
       -->
-      <xsl:if test="$verbose and (RegisterFileRef | RegisterKeptAt | Preformatted)">
-        <xsl:message>Skipping elements RegisterFileRef, RegisterKeptAt and Preformatted.</xsl:message>
-      </xsl:if>
+      <xsl:apply-templates select="RegisterFileRef | RegisterKeptAt | Preformatted"/>
     </cac:PartyLegalEntity>
   </xsl:template>
   
@@ -226,9 +237,7 @@
   <xsl:template match="OrderReferences">
     <xsl:choose>
       <xsl:when test="count(OrderReference) > 1">
-        <xsl:if test="$verbose">
-          <xsl:message>Only one OrderReference is supported. Skipping all OrderReferences.</xsl:message>
-        </xsl:if>
+        <xsl:message use-when="$verbose">Only one OrderReference is supported. Skipping all OrderReferences.</xsl:message>
       </xsl:when>
       <xsl:otherwise>
         <xsl:apply-templates select="OrderReference"/>
@@ -242,20 +251,78 @@
       <xsl:apply-templates select="SalesOrderID"/>
       <xsl:apply-templates select="IssueDate"/>
       <xsl:apply-templates select="UUID"/>
-      <xsl:if test="$verbose and ISDS_ID">
-        <xsl:message>Skipping ISDS_ID element.</xsl:message>
-      </xsl:if>
-      <xsl:if test="$verbose and FileReference">
-        <xsl:message>Skipping FileReference element.</xsl:message>
-      </xsl:if>
-      <xsl:if test="$verbose and ReferenceNumber">
-        <xsl:message>Skipping ReferenceNumber element.</xsl:message>
-      </xsl:if>      
+      <xsl:apply-templates select="ISDS_ID"/>
+      <xsl:apply-templates select="ExternalOrderIssueDate"/>
+      <xsl:apply-templates select="FileReference"/>
+      <xsl:apply-templates select="ReferenceNumber"/>
     </cac:OrderReference>
   </xsl:template>
   
   <xsl:template match="SalesOrderID">
     <cbc:SalesOrderID>{.}</cbc:SalesOrderID>
   </xsl:template>
+  
+  <xsl:template match="IssueDate">
+    <cbc:IssueDate>{.}</cbc:IssueDate>
+  </xsl:template>
+
+  <xsl:template match="UUID">
+    <cbc:UUID>{.}</cbc:UUID>
+  </xsl:template>
+  
+  <xsl:template match="ContractReferences">
+    <xsl:apply-templates select="ContractReference"/>
+  </xsl:template>
+  
+  <xsl:template match="ContractReference">
+    <cac:ContractDocumentReference>
+      <xsl:apply-templates select="ID"/>
+      <xsl:apply-templates select="UUID"/>
+      <xsl:apply-templates select="IssueDate"/>
+      <xsl:if test="LastValidDate  | LastValidDateUnbouded">
+        <cac:ValidityPeriod>
+          <xsl:apply-templates select="LastValidDate  | LastValidDateUnbouded"/>
+        </cac:ValidityPeriod>
+      </xsl:if>
+      <xsl:apply-templates select="ISDS_ID"/>
+      <xsl:apply-templates select="FileReference"/>
+      <xsl:apply-templates select="ReferenceNumber"/>
+    </cac:ContractDocumentReference>
+  </xsl:template>
+  
+  <xsl:template match="ID">
+    <cbc:ID>{.}</cbc:ID>
+  </xsl:template>
+  
+  <xsl:template match="LastValidDate">
+    <cbc:EndDate>{.}</cbc:EndDate>
+  </xsl:template>
+  
+  <xsl:template match="LastValidDateUnbounded">
+    <xsl:message use-when="$verbose">Unbounded last valid date of contract has been replaced by 9999-12-31.</xsl:message>
+    <cbc:EndDate>9999-12-31</cbc:EndDate>
+  </xsl:template>
+  
+  <xsl:template match="Delivery">
+    <cac:Delivery>
+      <xsl:if test="Party/PostalAddress">
+        <cac:DeliveryLocation>          
+          <xsl:apply-templates select="Party/PostalAddress" mode="PostalAddressAsAddress"/>
+        </cac:DeliveryLocation>
+      </xsl:if>
+      <cac:DeliveryParty>
+        <xsl:apply-templates select="Party/*"/>
+      </cac:DeliveryParty>
+    </cac:Delivery>
+  </xsl:template>
+  
+  <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
+                      | RegisterFileRef | RegisterKeptAt | Preformatted">
+    <xsl:if test="$verbose">
+      <xsl:message>Skipping {local-name()} element.</xsl:message>
+    </xsl:if>
+  </xsl:template>
+  
+ 
   
 </xsl:stylesheet>

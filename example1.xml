@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<invoice:Invoice xmlns:invoice="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
+                 xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
+                 xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+   <cbc:ID>FV-111999/2011</cbc:ID>
+   <cbc:UUID>7B4C5BE0-288C-11D2-8E62-004095452B84</cbc:UUID>
+   <cbc:IssueDate>2013-02-28</cbc:IssueDate>
+   <cbc:DueDate>2013-03-13</cbc:DueDate>
+   <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+   <cbc:TaxPointDate>2013-02-28</cbc:TaxPointDate>
+   <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+   <cac:AccountingSupplierParty>
+      <cac:Party>
+         <cac:PartyIdentification>
+            <cbc:ID schemeID="FIXME">25097563</cbc:ID>
+         </cac:PartyIdentification>
+         <cac:PartyName>
+            <cbc:Name>ABRA Software a.s.</cbc:Name>
+         </cac:PartyName>
+         <cac:PostalAddress>
+            <cbc:StreetName>Jeremiášova 1422</cbc:StreetName>
+            <cbc:CityName>Praha 13</cbc:CityName>
+            <cbc:PostalZone>15300</cbc:PostalZone>
+            <cac:Country>
+               <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+            </cac:Country>
+         </cac:PostalAddress>
+         <cac:PartyTaxScheme>
+            <cbc:CompanyID>CZ25097563</cbc:CompanyID>
+            <cac:TaxScheme>
+               <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+         </cac:PartyTaxScheme>
+         <cac:PartyLegalEntity>
+            <cbc:RegistrationDate>1996-12-31</cbc:RegistrationDate>
+         </cac:PartyLegalEntity>
+         <cac:Contact>
+            <cbc:Name>Josef Novák</cbc:Name>
+            <cbc:Telephone>123456789</cbc:Telephone>
+            <cbc:ElectronicMail>novak@abra.eu</cbc:ElectronicMail>
+         </cac:Contact>
+      </cac:Party>
+   </cac:AccountingSupplierParty>
+   <cac:AccountingCustomerParty>
+      <cac:Party>
+         <cac:PartyIdentification>
+            <cbc:ID schemeID="FIXME">00006947</cbc:ID>
+         </cac:PartyIdentification>
+         <cac:PartyName>
+            <cbc:Name>Ministerstvo financí ČR</cbc:Name>
+         </cac:PartyName>
+         <cac:PostalAddress>
+            <cbc:StreetName>Letenská 15</cbc:StreetName>
+            <cbc:CityName>Praha 1</cbc:CityName>
+            <cbc:PostalZone>11810</cbc:PostalZone>
+            <cac:Country>
+               <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+            </cac:Country>
+         </cac:PostalAddress>
+         <cac:PartyTaxScheme>
+            <cbc:CompanyID>CZ00006947</cbc:CompanyID>
+            <cac:TaxScheme>
+               <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+         </cac:PartyTaxScheme>
+         <cac:Contact>
+            <cbc:Name>Jan Novák</cbc:Name>
+            <cbc:Telephone>987654321</cbc:Telephone>
+            <cbc:ElectronicMail>novotny@mfcr.cz</cbc:ElectronicMail>
+         </cac:Contact>
+      </cac:Party>
+   </cac:AccountingCustomerParty>
+   <cac:BuyerCustomerParty>
+      <cac:Party>
+         <cac:PartyIdentification>
+            <cbc:ID schemeID="FIXME">00006947</cbc:ID>
+         </cac:PartyIdentification>
+         <cac:PartyName>
+            <cbc:Name>Ministerstvo financí ČR</cbc:Name>
+         </cac:PartyName>
+         <cac:PostalAddress>
+            <cbc:StreetName>Letenská 15</cbc:StreetName>
+            <cbc:CityName>Praha 1</cbc:CityName>
+            <cbc:PostalZone>11810</cbc:PostalZone>
+            <cac:Country>
+               <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+            </cac:Country>
+         </cac:PostalAddress>
+         <cac:PartyTaxScheme>
+            <cbc:CompanyID>CZ00006947</cbc:CompanyID>
+            <cac:TaxScheme>
+               <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+         </cac:PartyTaxScheme>
+         <cac:Contact>
+            <cbc:Name>Jan Novák</cbc:Name>
+            <cbc:Telephone>987654321</cbc:Telephone>
+            <cbc:ElectronicMail>novotny@mfcr.cz</cbc:ElectronicMail>
+         </cac:Contact>
+      </cac:Party>
+   </cac:BuyerCustomerParty>
+   <cac:SellerSupplierParty>
+      <cac:Party>
+         <cac:PartyIdentification>
+            <cbc:ID schemeID="FIXME">25097563</cbc:ID>
+         </cac:PartyIdentification>
+         <cac:PartyName>
+            <cbc:Name>ABRA Software a.s.</cbc:Name>
+         </cac:PartyName>
+         <cac:PostalAddress>
+            <cbc:StreetName>Jeremiášova 1422</cbc:StreetName>
+            <cbc:CityName>Praha 13</cbc:CityName>
+            <cbc:PostalZone>15300</cbc:PostalZone>
+            <cac:Country>
+               <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+            </cac:Country>
+         </cac:PostalAddress>
+         <cac:PartyTaxScheme>
+            <cbc:CompanyID>CZ25097563</cbc:CompanyID>
+            <cac:TaxScheme>
+               <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+         </cac:PartyTaxScheme>
+         <cac:PartyLegalEntity>
+            <cbc:RegistrationDate>1996-12-31</cbc:RegistrationDate>
+         </cac:PartyLegalEntity>
+         <cac:Contact>
+            <cbc:Name>Josef Novák</cbc:Name>
+            <cbc:Telephone>123456789</cbc:Telephone>
+            <cbc:ElectronicMail>novak@abra.eu</cbc:ElectronicMail>
+         </cac:Contact>
+      </cac:Party>
+   </cac:SellerSupplierParty>
+   <cac:Delivery>
+      <cac:DeliveryLocation>
+         <cac:Address>
+            <cbc:StreetName>Letenská 15</cbc:StreetName>
+            <cbc:CityName>Praha 1</cbc:CityName>
+            <cbc:PostalZone>11810</cbc:PostalZone>
+            <cac:Country>
+               <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+            </cac:Country>
+         </cac:Address>
+      </cac:DeliveryLocation>
+      <cac:DeliveryParty>
+         <cac:PartyIdentification>
+            <cbc:ID schemeID="FIXME">00006947</cbc:ID>
+         </cac:PartyIdentification>
+         <cac:PartyName>
+            <cbc:Name>Ministerstvo financí ČR</cbc:Name>
+         </cac:PartyName>
+         <cac:PostalAddress>
+            <cbc:StreetName>Letenská 15</cbc:StreetName>
+            <cbc:CityName>Praha 1</cbc:CityName>
+            <cbc:PostalZone>11810</cbc:PostalZone>
+            <cac:Country>
+               <cbc:IdentificationCode>CZ</cbc:IdentificationCode>
+            </cac:Country>
+         </cac:PostalAddress>
+         <cac:PartyTaxScheme>
+            <cbc:CompanyID>CZ00006947</cbc:CompanyID>
+            <cac:TaxScheme>
+               <cbc:ID>VAT</cbc:ID>
+            </cac:TaxScheme>
+         </cac:PartyTaxScheme>
+         <cac:Contact>
+            <cbc:Name>Jan Novák</cbc:Name>
+            <cbc:Telephone>987654321</cbc:Telephone>
+            <cbc:ElectronicMail>novotny@mfcr.cz</cbc:ElectronicMail>
+         </cac:Contact>
+      </cac:DeliveryParty>
+   </cac:Delivery>
+</invoice:Invoice>
