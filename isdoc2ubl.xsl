@@ -50,10 +50,15 @@
         <xsl:apply-templates select="LocalCurrencyCode"/>
       </xsl:if>
       
+      <xsl:apply-templates select="OrderReferences"/>
+      
       <xsl:apply-templates select="AccountingSupplierParty"/>
       
       <xsl:apply-templates select="AccountingCustomerParty"/>
-      
+
+      <xsl:apply-templates select="BuyerCustomerParty"/>
+
+      <xsl:apply-templates select="SellerSupplierParty"/>
       
     </invoice:Invoice>
     
@@ -80,6 +85,20 @@
       <xsl:apply-templates select="Party"/>
     </cac:AccountingCustomerParty>
   </xsl:template>
+
+  <xsl:template match="SellerSupplierParty">
+    <!-- SellerSupplierParty is not in EU semantic model but UBL supports it -->
+    <cac:SellerSupplierParty>
+      <xsl:apply-templates select="Party"/>
+    </cac:SellerSupplierParty>
+  </xsl:template>
+
+  <xsl:template match="BuyerCustomerParty">
+    <!-- BuyerCustomerParty is not in EU semantic model but UBL supports it -->
+    <cac:BuyerCustomerParty>
+      <xsl:apply-templates select="Party"/>
+    </cac:BuyerCustomerParty>
+  </xsl:template>
   
   <xsl:template match="Party">
     <cac:Party>
@@ -96,10 +115,10 @@
     <cac:PartyIdentification>
       <cbc:ID schemeID="FIXME">{ID}</cbc:ID>
       <!-- FIXME: schemeID for IČO must be registered as ICD according to ISO/IEC 6523 -->
-      <xsl:if test="UserID">
+      <xsl:if test="$verbose and UserID">
         <xsl:message>Do not know how to map UserID into ICD identification scheme. Skipping element.</xsl:message>
       </xsl:if>
-      <xsl:if test="CatalogFirmIdentification">
+      <xsl:if test="$verbose and CatalogFirmIdentification">
         <xsl:message>Do not know how to map CatalogFirmIdentification into ICD identification scheme.  Skipping element.</xsl:message>
       </xsl:if>
     </cac:PartyIdentification>
@@ -194,7 +213,7 @@
         RegisterIdentification/RegisterKeptAt
         RegisterIdentification/Preformatted
       -->
-      <xsl:if test="RegisterFileRef | RegisterKeptAt | Preformatted">
+      <xsl:if test="$verbose and (RegisterFileRef | RegisterKeptAt | Preformatted)">
         <xsl:message>Skipping elements RegisterFileRef, RegisterKeptAt and Preformatted.</xsl:message>
       </xsl:if>
     </cac:PartyLegalEntity>
@@ -202,6 +221,41 @@
   
   <xsl:template match="RegisterDate">
     <cbc:RegistrationDate>{.}</cbc:RegistrationDate>
+  </xsl:template>
+  
+  <xsl:template match="OrderReferences">
+    <xsl:choose>
+      <xsl:when test="count(OrderReference) > 1">
+        <xsl:if test="$verbose">
+          <xsl:message>Only one OrderReference is supported. Skipping all OrderReferences.</xsl:message>
+        </xsl:if>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:apply-templates select="OrderReference"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="OrderReference">
+    <cac:OrderReference>
+      <cbc:ID>{ExternalOrderID}</cbc:ID>
+      <xsl:apply-templates select="SalesOrderID"/>
+      <xsl:apply-templates select="IssueDate"/>
+      <xsl:apply-templates select="UUID"/>
+      <xsl:if test="$verbose and ISDS_ID">
+        <xsl:message>Skipping ISDS_ID element.</xsl:message>
+      </xsl:if>
+      <xsl:if test="$verbose and FileReference">
+        <xsl:message>Skipping FileReference element.</xsl:message>
+      </xsl:if>
+      <xsl:if test="$verbose and ReferenceNumber">
+        <xsl:message>Skipping ReferenceNumber element.</xsl:message>
+      </xsl:if>      
+    </cac:OrderReference>
+  </xsl:template>
+  
+  <xsl:template match="SalesOrderID">
+    <cbc:SalesOrderID>{.}</cbc:SalesOrderID>
   </xsl:template>
   
 </xsl:stylesheet>
