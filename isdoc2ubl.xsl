@@ -13,6 +13,10 @@
   <xsl:output indent="yes"></xsl:output>
   
   <xsl:param name="verbose" select="true()" static="true"/>
+  
+  <xsl:variable name="in-foreign-currency" select="exists(/Invoice/ForeignCurrencyCode)"/>
+  <xsl:variable name="currency" select="if ($in-foreign-currency) then /Invoice/ForeignCurrencyCode else /Invoice/LocalCurrencyCode"/>
+  
 
   <xsl:template match="Invoice">
     <invoice:Invoice>
@@ -63,6 +67,8 @@
       <xsl:apply-templates select="SellerSupplierParty"/>
       
       <xsl:apply-templates select="Delivery"/>
+      
+      <xsl:apply-templates select="InvoiceLines"/>
       
     </invoice:Invoice>
     
@@ -314,6 +320,47 @@
         <xsl:apply-templates select="Party/*"/>
       </cac:DeliveryParty>
     </cac:Delivery>
+  </xsl:template>
+  
+  <xsl:template match="InvoiceLines">
+    <xsl:apply-templates select="InvoiceLine"/>
+  </xsl:template>
+  
+  <xsl:template match="InvoiceLine">
+    <cac:InvoiceLine>
+      <xsl:apply-templates select="ID"/>
+      
+      <xsl:apply-templates select="InvoicedQuantity"/>
+      
+      <xsl:apply-templates select="if ($in-foreign-currency) then LineExtensionAmountCurr else LineExtensionAmount"/>
+      
+      <xsl:apply-templates select="OrderReference"/>
+      
+    </cac:InvoiceLine>
+  </xsl:template>
+  
+  <xsl:template match="InvoicedQuantity">
+    <cbc:InvoicedQuantity>
+      <xsl:copy-of select="@unitCode"/>
+      <xsl:value-of select="."/>
+    </cbc:InvoicedQuantity>
+  </xsl:template>
+  
+  <xsl:template match="LineExtensionAmount | LineExtensionAmountCurr">
+    <cbc:LineExtensionAmount currencyID="{$currency}">{.}</cbc:LineExtensionAmount>
+  </xsl:template>
+  
+  <xsl:key name="OrderReference" match="OrderReference" use="@id"/>
+  
+  <xsl:template match="InvoiceLine/OrderReference">
+    <cac:OrderLineReference>
+      <xsl:apply-templates select="LineID"/>
+      <xsl:apply-templates select="key('OrderReference', @ref)"/>
+    </cac:OrderLineReference>
+  </xsl:template>
+  
+  <xsl:template match="LineID">
+    <cbc:LineID>{.}</cbc:LineID>
   </xsl:template>
   
   <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
