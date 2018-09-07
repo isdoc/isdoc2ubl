@@ -336,6 +336,15 @@
       
       <xsl:apply-templates select="OrderReference"/>
       
+      <!-- FIXME: DeliveryNoteReference, OriginalDocumentReference, ContractReference, EgovClassifier -->
+      
+      <xsl:apply-templates select="LineExtensionAmountBeforeDiscount
+                                   | LineExtensionAmountTaxInclusiveCurr
+                                   | LineExtensionAmountTaxInclusive
+                                   | LineExtensionAmountTaxInclusiveBeforeDiscount"/>
+      
+      <xsl:apply-templates select="LineExtensionTaxAmount"/>
+      
     </cac:InvoiceLine>
   </xsl:template>
   
@@ -348,6 +357,13 @@
   
   <xsl:template match="LineExtensionAmount | LineExtensionAmountCurr">
     <cbc:LineExtensionAmount currencyID="{$currency}">{.}</cbc:LineExtensionAmount>
+  </xsl:template>
+  
+  <!-- Supported in UBL, but not part of EU SM -->
+  <xsl:template match="LineExtensionTaxAmount">
+    <cac:TaxTotal>
+      <cbc:TaxAmount currencyID="{$currency}">{.}</cbc:TaxAmount>
+    </cac:TaxTotal>
   </xsl:template>
   
   <xsl:key name="OrderReference" match="OrderReference" use="@id"/>
@@ -364,7 +380,12 @@
   </xsl:template>
   
   <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
-                      | RegisterFileRef | RegisterKeptAt | Preformatted">
+                      | RegisterFileRef | RegisterKeptAt | Preformatted
+                      | LineExtensionAmountBeforeDiscount
+                      | LineExtensionAmountTaxInclusiveCurr
+                      | LineExtensionAmountTaxInclusive
+                      | LineExtensionAmountTaxInclusiveBeforeDiscount
+                      | *">
     <xsl:if test="$verbose">
       <xsl:message>Skipping {local-name()} element.</xsl:message>
     </xsl:if>
