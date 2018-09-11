@@ -343,7 +343,11 @@
                                    | LineExtensionAmountTaxInclusive
                                    | LineExtensionAmountTaxInclusiveBeforeDiscount"/>
       
-      <xsl:apply-templates select="LineExtensionTaxAmount"/>
+      <xsl:apply-templates select="if (not($in-foreign-currency)) then LineExtensionTaxAmount else ()"/>
+      
+      <xsl:apply-templates select="Item"/>
+      
+      <xsl:apply-templates select="UnitPrice"/>
       
     </cac:InvoiceLine>
   </xsl:template>
@@ -366,6 +370,19 @@
     </cac:TaxTotal>
   </xsl:template>
   
+  <xsl:template match="UnitPrice">
+    <xsl:choose>
+      <xsl:when test="$in-foreign-currency and $verbose">
+        <xsl:message>UnitPrice is specified in a local currency and can not be converted into foreign currency. Ignoring.</xsl:message>
+      </xsl:when>
+      <xsl:otherwise>
+        <cac:Price>
+          <cbc:PriceAmount currencyID="{$currency}">{.}</cbc:PriceAmount>  
+        </cac:Price>            
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
   <xsl:key name="OrderReference" match="OrderReference" use="@id"/>
   
   <xsl:template match="InvoiceLine/OrderReference">
@@ -379,18 +396,59 @@
     <cbc:LineID>{.}</cbc:LineID>
   </xsl:template>
   
+  <xsl:template match="Item">
+    <cac:Item>
+      <xsl:apply-templates select="Description"/>
+      <xsl:apply-templates select="BuyersItemIdentification"/>
+      <xsl:apply-templates select="SellersItemIdentification"/>
+      <xsl:apply-templates select="CatalogueItemIdentification"/>
+      <xsl:apply-templates select="SecondarySellersItemIdentification"/>
+      <xsl:apply-templates select="TertiarySellersItemIdentification"/>
+      <xsl:apply-templates select="StoreBatches"/>
+    </cac:Item>
+  </xsl:template>
+  
+  <xsl:template match="Description">
+    <cbc:Description>{.}</cbc:Description>
+  </xsl:template>
+  
+  <xsl:template match="SellersItemIdentification">
+    <cac:SellersItemIdentification>
+      <xsl:apply-templates select="ID"/>
+    </cac:SellersItemIdentification>
+  </xsl:template>
+
+  <xsl:template match="BuyersItemIdentification">
+    <cac:BuyersItemIdentification>
+      <xsl:apply-templates select="ID"/>
+    </cac:BuyersItemIdentification>
+  </xsl:template>
+
+  <xsl:template match="CatalogueItemIdentification">
+    <cac:StandardItemIdentification>
+      <!-- 0088 is ISO 6523 code for EAN -->
+      <cbc:ID schemeID="0088">{ID}</cbc:ID>      
+    </cac:StandardItemIdentification>
+  </xsl:template>
+  
+  <xsl:template match="SecondarySellersItemIdentification | TertiarySellersItemIdentification">
+    <cac:AdditionalItemProperty>
+      <cbc:Name>{local-name()}ID</cbc:Name>
+      <cbc:Value>{ID}</cbc:Value>
+    </cac:AdditionalItemProperty>
+  </xsl:template>
+  
   <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
                       | RegisterFileRef | RegisterKeptAt | Preformatted
                       | LineExtensionAmountBeforeDiscount
                       | LineExtensionAmountTaxInclusiveCurr
                       | LineExtensionAmountTaxInclusive
                       | LineExtensionAmountTaxInclusiveBeforeDiscount
+                      | StoreBatches
                       | *">
     <xsl:if test="$verbose">
       <xsl:message>Skipping {local-name()} element.</xsl:message>
     </xsl:if>
   </xsl:template>
-  
- 
   
 </xsl:stylesheet>
