@@ -402,6 +402,7 @@
       <xsl:apply-templates select="BuyersItemIdentification"/>
       <xsl:apply-templates select="SellersItemIdentification"/>
       <xsl:apply-templates select="CatalogueItemIdentification"/>
+      <xsl:apply-templates select="../ClassifiedTaxCategory"/>
       <xsl:apply-templates select="SecondarySellersItemIdentification"/>
       <xsl:apply-templates select="TertiarySellersItemIdentification"/>
       <xsl:apply-templates select="StoreBatches"/>
@@ -436,6 +437,19 @@
       <cbc:Name>{local-name()}ID</cbc:Name>
       <cbc:Value>{ID}</cbc:Value>
     </cac:AdditionalItemProperty>
+  </xsl:template>
+  
+  <xsl:template match="ClassifiedTaxCategory">
+    <cac:ClassifiedTaxCategory>
+      <xsl:apply-templates select="Percent"/>
+      <cac:TaxScheme>
+        <cbc:ID>VAT</cbc:ID>
+      </cac:TaxScheme>
+    </cac:ClassifiedTaxCategory>
+  </xsl:template>
+  
+  <xsl:template match="Percent">
+    <cbc:Percent>{.}</cbc:Percent>
   </xsl:template>
   
   <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
