@@ -123,8 +123,7 @@
 
   <xsl:template match="PartyIdentification">
     <cac:PartyIdentification>
-      <cbc:ID schemeID="FIXME">{ID}</cbc:ID>
-      <!-- FIXME: schemeID for IČO must be registered as ICD according to ISO/IEC 6523 -->
+      <cbc:ID schemeID="0154">{ID}</cbc:ID>      
       <xsl:if test="UserID">
         <xsl:message use-when="$verbose">Do not know how to map UserID into ICD identification scheme. Skipping element.</xsl:message>
       </xsl:if>
