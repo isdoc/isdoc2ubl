@@ -329,6 +329,9 @@
     <cac:InvoiceLine>
       <xsl:apply-templates select="ID"/>
       
+      <xsl:apply-templates select="Note"/>
+      <xsl:apply-templates select="VATNote"/>
+      
       <xsl:apply-templates select="InvoicedQuantity"/>
       
       <xsl:apply-templates select="if ($in-foreign-currency) then LineExtensionAmountCurr else LineExtensionAmount"/>
@@ -349,6 +352,10 @@
       <xsl:apply-templates select="UnitPrice"/>
       
     </cac:InvoiceLine>
+  </xsl:template>
+  
+  <xsl:template match="Note | VATNote">
+    <cbc:Note>{.}</cbc:Note>
   </xsl:template>
   
   <xsl:template match="InvoicedQuantity">
