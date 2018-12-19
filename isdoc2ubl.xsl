@@ -67,6 +67,8 @@
       
       <xsl:apply-templates select="Delivery"/>
       
+      <xsl:apply-templates select="LegalMonetaryTotal"/>
+      
       <xsl:apply-templates select="InvoiceLines"/>
       
     </invoice:Invoice>
@@ -319,6 +321,40 @@
       </cac:DeliveryParty>
     </cac:Delivery>
   </xsl:template>
+
+  <xsl:template match="LegalMonetaryTotal">
+    <cac:LegalMonetaryTotal>
+      <xsl:apply-templates select="if ($in-foreign-currency) then TaxExclusiveAmountCurr else TaxExclusiveAmount"/>      
+      <xsl:apply-templates select="if ($in-foreign-currency) then TaxInclusiveAmountCurr else TaxInclusiveAmount"/>
+      <xsl:apply-templates select="AlreadyClaimedTaxExclusiveAmount | AlreadyClaimedTaxExclusiveAmountCurr"/>
+      <xsl:apply-templates select="AlreadyClaimedTaxInclusiveAmount | AlreadyClaimedTaxInclusiveAmountCurr"/>
+      <xsl:apply-templates select="DifferenceTaxExclusiveAmount | DifferenceTaxExclusiveAmountCurr"/>
+      <xsl:apply-templates select="DifferenceTaxInclusiveAmount | DifferenceTaxInclusiveAmountCurr"/>
+      <xsl:apply-templates select="if ($in-foreign-currency) then PaidDepositsAmountCurr else PaidDepositsAmount"/>
+      <xsl:apply-templates select="if ($in-foreign-currency) then PayableRoundingAmountCurr else PayableRoundingAmount"/>
+      <xsl:apply-templates select="if ($in-foreign-currency) then PayableAmountCurr else PayableAmount"/>
+    </cac:LegalMonetaryTotal>
+  </xsl:template>
+
+  <xsl:template match="TaxExclusiveAmount | TaxExclusiveAmountCurr">
+    <cbc:TaxExclusiveAmount currencyID="{$currency}">{.}</cbc:TaxExclusiveAmount>
+  </xsl:template>
+
+  <xsl:template match="TaxInclusiveAmount | TaxInclusiveAmountCurr">
+    <cbc:TaxInclusiveAmount currencyID="{$currency}">{.}</cbc:TaxInclusiveAmount>
+  </xsl:template>
+
+  <xsl:template match="PayableRoundingAmount | PayableRoundingAmountCurr">
+    <cbc:PayableRoundingAmount currencyID="{$currency}">{.}</cbc:PayableRoundingAmount>
+  </xsl:template>
+
+  <xsl:template match="PayableAmount | PayableAmountCurr">
+    <cbc:PayableAmount currencyID="{$currency}">{.}</cbc:PayableAmount>
+  </xsl:template>
+
+  <xsl:template match="PaidDepositsAmount | PaidDepositsAmountCurr">
+    <cbc:PrepaidAmount currencyID="{$currency}">{.}</cbc:PrepaidAmount>
+  </xsl:template>
   
   <xsl:template match="InvoiceLines">
     <xsl:apply-templates select="InvoiceLine"/>
@@ -464,6 +500,10 @@
                       | LineExtensionAmountTaxInclusive
                       | LineExtensionAmountTaxInclusiveBeforeDiscount
                       | StoreBatches
+                      | AlreadyClaimedTaxExclusiveAmount | AlreadyClaimedTaxExclusiveAmountCurr
+                      | AlreadyClaimedTaxInclusiveAmount | AlreadyClaimedTaxInclusiveAmountCurr
+                      | DifferenceTaxExclusiveAmount | DifferenceTaxExclusiveAmountCurr
+                      | DifferenceTaxInclusiveAmount | DifferenceTaxInclusiveAmountCurr
                       | *">
     <xsl:message use-when="$verbose">Skipping {local-name()} element.</xsl:message>
   </xsl:template>
