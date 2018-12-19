@@ -13,9 +13,12 @@ Obsah repozitáře:
 
 * `xsd/*` -- XML schémata pro ISDOC a UBL
 
+## Rozdíly mezi formáty
 
-
-
+Formát ISDOC je v mnoha aspektech bohatší než formát evropské
+faktury. Při konverzi některých faktur tak při převodu dochází ke
+ztrátě informací. Transformace se v těchto případech snaží vypsáním
+varování upozornit na údaje, které se nepřenášejí.
 
 ## Spouštění konverze
 
