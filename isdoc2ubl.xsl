@@ -16,7 +16,6 @@
   
   <xsl:variable name="in-foreign-currency" select="exists(/Invoice/ForeignCurrencyCode)"/>
   <xsl:variable name="currency" select="if ($in-foreign-currency) then /Invoice/ForeignCurrencyCode else /Invoice/LocalCurrencyCode"/>
-  
 
   <xsl:template match="Invoice">
     <invoice:Invoice>
@@ -378,8 +377,8 @@
   
   <xsl:template match="UnitPrice">
     <xsl:choose>
-      <xsl:when test="$in-foreign-currency and $verbose">
-        <xsl:message>UnitPrice is specified in a local currency and can not be converted into foreign currency. Ignoring.</xsl:message>
+      <xsl:when test="$in-foreign-currency">
+        <xsl:message use-when="$verbose">UnitPrice is specified in a local currency and can not be converted into foreign currency. Ignoring.</xsl:message>
       </xsl:when>
       <xsl:otherwise>
         <cac:Price>
@@ -466,9 +465,7 @@
                       | LineExtensionAmountTaxInclusiveBeforeDiscount
                       | StoreBatches
                       | *">
-    <xsl:if test="$verbose">
-      <xsl:message>Skipping {local-name()} element.</xsl:message>
-    </xsl:if>
+    <xsl:message use-when="$verbose">Skipping {local-name()} element.</xsl:message>
   </xsl:template>
   
 </xsl:stylesheet>
