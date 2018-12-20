@@ -10,7 +10,7 @@
   expand-text="yes"
   version="3.0">
 
-  <xsl:output indent="yes"></xsl:output>
+  <xsl:output indent="yes"/>
   
   <xsl:param name="verbose" select="true()" static="true"/>
   
@@ -66,6 +66,8 @@
       <xsl:apply-templates select="SellerSupplierParty"/>
       
       <xsl:apply-templates select="Delivery"/>
+      
+      <xsl:apply-templates select="TaxTotal"/>
       
       <xsl:apply-templates select="LegalMonetaryTotal"/>
       
@@ -201,9 +203,10 @@
     <cbc:CompanyID>{.}</cbc:CompanyID>
   </xsl:template>
   
-  <xsl:template match="TaxScheme">
+  <xsl:template match="TaxScheme" name="TaxScheme">
+    <xsl:param name="scheme" select="."/>
     <cac:TaxScheme>
-      <cbc:ID>{.}</cbc:ID>
+      <cbc:ID>{$scheme}</cbc:ID>
     </cac:TaxScheme>
   </xsl:template>
   
@@ -322,6 +325,56 @@
     </cac:Delivery>
   </xsl:template>
 
+  <xsl:template match="TaxTotal">
+    <cac:TaxTotal>
+      <xsl:apply-templates select="if ($in-foreign-currency) then TaxAmountCurr else TaxAmount"/>
+      <xsl:apply-templates select="TaxSubTotal"/>
+    </cac:TaxTotal>
+  </xsl:template>
+
+  <xsl:template match="TaxAmount | TaxAmountCurr">
+    <cbc:TaxAmount currencyID="{$currency}">{.}</cbc:TaxAmount>
+  </xsl:template>
+  
+  <xsl:template match="TaxSubTotal">
+    <cac:TaxSubtotal>
+      <xsl:apply-templates select="if ($in-foreign-currency) then TaxableAmountCurr else TaxableAmount"/>
+      <xsl:apply-templates select="if ($in-foreign-currency) then TaxAmountCurr else TaxAmount"/>
+      
+      <xsl:apply-templates select="TaxInclusiveAmountCurr | TaxInclusiveAmount 
+                                  | AlreadyClaimedTaxableAmountCurr | AlreadyClaimedTaxableAmount
+                                  | AlreadyClaimedTaxAmountCurr | AlreadyClaimedTaxAmount
+                                  | AlreadyClaimedTaxInclusiveAmountCurr | AlreadyClaimedTaxInclusiveAmount
+                                  | DifferenceTaxableAmountCurr | DifferenceTaxableAmount
+                                  | DifferenceTaxAmountCurr | DifferenceTaxAmount
+                                  | DifferenceTaxInclusiveAmountCurr | DifferenceTaxInclusiveAmount"/>
+      
+      <xsl:apply-templates select="TaxCategory"/>
+    </cac:TaxSubtotal>
+  </xsl:template>
+  
+  <xsl:template match="TaxableAmount | TaxableAmountCurr">
+    <cbc:TaxableAmount currencyID="{$currency}">{.}</cbc:TaxableAmount>
+  </xsl:template>
+  
+  <xsl:template match="TaxCategory">
+    <cac:TaxCategory>
+      <xsl:apply-templates select="Percent"/>
+      
+      <!-- TaxScheme is mandatory in EU invoice -->
+      <xsl:choose>
+        <xsl:when test="TaxScheme">
+          <xsl:apply-templates select="TaxScheme"/>    
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:call-template name="TaxScheme">
+            <xsl:with-param name="scheme">VAT</xsl:with-param>
+          </xsl:call-template>
+        </xsl:otherwise>
+      </xsl:choose>      
+    </cac:TaxCategory>
+  </xsl:template>
+  
   <xsl:template match="LegalMonetaryTotal">
     <cac:LegalMonetaryTotal>
       <xsl:apply-templates select="if ($in-foreign-currency) then TaxExclusiveAmountCurr else TaxExclusiveAmount"/>      
@@ -502,8 +555,12 @@
                       | StoreBatches
                       | AlreadyClaimedTaxExclusiveAmount | AlreadyClaimedTaxExclusiveAmountCurr
                       | AlreadyClaimedTaxInclusiveAmount | AlreadyClaimedTaxInclusiveAmountCurr
+                      | AlreadyTaxInclusiveAmount | AlreadyTaxInclusiveAmountCurr
                       | DifferenceTaxExclusiveAmount | DifferenceTaxExclusiveAmountCurr
                       | DifferenceTaxInclusiveAmount | DifferenceTaxInclusiveAmountCurr
+                      | DifferenceTaxableAmount | DifferenceTaxableAmountCurr
+                      | DifferenceTaxAmount | DifferenceTaxAmountCurr
+                      | TaxSubTotal/TaxInclusiveAmount | TaxSubTotal/TaxInclusiveAmountCurr
                       | *">
     <xsl:message use-when="$verbose">Skipping {local-name()} element.</xsl:message>
   </xsl:template>
