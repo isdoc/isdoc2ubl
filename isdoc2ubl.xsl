@@ -57,6 +57,8 @@
       
       <xsl:apply-templates select="ContractReferences"/>
       
+      <xsl:apply-templates select="SupplementsList/Supplement"/>
+      
       <xsl:apply-templates select="AccountingSupplierParty"/>
       
       <xsl:apply-templates select="AccountingCustomerParty"/>
@@ -66,6 +68,9 @@
       <xsl:apply-templates select="SellerSupplierParty"/>
       
       <xsl:apply-templates select="Delivery"/>
+      
+      <xsl:apply-templates select="PaymentMeans/Payment"/>
+      <xsl:apply-templates select="PaymentMeans/AlternateBankAccounts"/>
       
       <xsl:apply-templates select="TaxTotal"/>
       
@@ -545,7 +550,34 @@
   <xsl:template match="Percent">
     <cbc:Percent>{.}</cbc:Percent>
   </xsl:template>
+
+  <xsl:template match="Payment">
+    <cac:PaymentMeans>
+      <xsl:apply-templates select="PaymentMeansCode"/>
+      
+      <!-- Supported in UBL, but not part of EU SM -->
+      <xsl:apply-templates select="Details/PaymentDueDate"/>
+      
+      <!-- Not supported in UBL and EU SM -->      
+      <xsl:apply-templates select="PaidAmount | Details/*[. except PaymentDueDate]"/>      
+    </cac:PaymentMeans>
+  </xsl:template>
+
+  <xsl:template match="PaymentMeansCode">
+    <cbc:PaymentMeansCode>{.}</cbc:PaymentMeansCode>
+  </xsl:template>
   
+  <xsl:template match="Supplement">
+    <cac:AdditionalDocumentReference>
+      <cbc:ID>{generate-id(.)}</cbc:ID>
+      <cac:Attachment>
+        <cac:ExternalReference>
+          <cbc:URI>{Filename}</cbc:URI>
+        </cac:ExternalReference>
+      </cac:Attachment>
+    </cac:AdditionalDocumentReference>    
+  </xsl:template>
+
   <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
                       | RegisterFileRef | RegisterKeptAt | Preformatted
                       | LineExtensionAmountBeforeDiscount
@@ -561,6 +593,7 @@
                       | DifferenceTaxableAmount | DifferenceTaxableAmountCurr
                       | DifferenceTaxAmount | DifferenceTaxAmountCurr
                       | TaxSubTotal/TaxInclusiveAmount | TaxSubTotal/TaxInclusiveAmountCurr
+                      | Details/*[. except PaymentDueDate]
                       | *">
     <xsl:message use-when="$verbose">Skipping {local-name()} element.</xsl:message>
   </xsl:template>
