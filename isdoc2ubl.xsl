@@ -569,13 +569,15 @@
   
   <xsl:template match="Supplement">
     <cac:AdditionalDocumentReference>
+      <!-- ID is mandatory in EU SM we have to generate it -->
       <cbc:ID>{generate-id(.)}</cbc:ID>
       <cac:Attachment>
         <cac:ExternalReference>
           <cbc:URI>{Filename}</cbc:URI>
         </cac:ExternalReference>
       </cac:Attachment>
-    </cac:AdditionalDocumentReference>    
+    </cac:AdditionalDocumentReference>
+    <xsl:apply-templates select="DigestMethod | DigestValue"/>    
   </xsl:template>
 
   <xsl:template match="ISDS_ID | ExternalOrderIssueDate | FileReference | ReferenceNumber
