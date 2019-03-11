@@ -1,5 +1,28 @@
 # Rozdíly mezi ISDOC a evropskou fakturou v UBL
 
+Formát ISDOC byl při svém vzniku inspirován tehdejší verzí formátu UBL. Používá proto mnoho shodných jmen elementů. Nicméně pro snazší používání používá jen jeden jmenný prostor. Zároveň formát ISDOC obsahuje mnoho elementů, které řeší české národní speciality.
+
+Sémantický model evropské faktury je poměrně omezený a pro mnoho konstrukcí ISDOC v něm neexistuje ekvivalent. Sémantický model evropské fakutry je však jen podmnožina UBL, a proto některé z elementů ISDOC mohou být do UBL přeneseny, i když je sémantický model evropské faktury nepodporuje.
+
+## Doporučené mapování
+
+Doporučené mapování z ISDOC na UBL je realizováno jako ukázková transformace [`isdoc2ubl.xsl`](isdoc2ubl.xsl).
+
+Mapování některých konstrukcí ISDOC není možné nebo není jednoznačené. Tyto případy jsou dále rozebrány.
+
+### Datum splatnosti faktury
+
+ISDOC může obsahovat více datumů pro jednotlivé platby. Evropská faktura podporuje pouze jedno datum. Při mapování se tedy použije nejdřívější datum splatnosti.
+
+### Typy dokumentů
+
+Typ dokumentu 7 (Zjednodušený daňový doklad) není v mapování podporován.
+
+### Částky v cizí měně
+
+ISDOC pracuje s částkami v cizí měně dost odlišne než UBL. V ISDOC může být faktura v cizí měně, ale v tomto případě musí obsahovat všechny částky jak v cizí měně tak v korunách. V UBL jsou jednotlivé částky uvedeny vždy pouze v jedné měně, ale ta může být u každé částky jiná (byť to asi nebývá běžné). Při mapování je tedy potřeba určit, zda je faktura v cizí měně nebo v korunách. Podle toho se pak při mapování do UBL dostanou buď jen částky v cizí měně, nebo jen částky v korunách.
+
+
 
 
 
