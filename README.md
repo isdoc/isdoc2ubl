@@ -15,7 +15,7 @@ Obsah repozitáře:
 
 Nástroje slouží jako ukázka. Vzhledem k velkému množství rozdílů mezi formáty není doporučeno nástroj bez dalších úprav používat v produkčním prostředí.
 
-Nástroje v této repozitory je možné používat v souladu s [licencí](LICENCE).
+Nástroje v této repozitory je možné používat v souladu s [licencí](LICENSE).
 
 ## Rozdíly mezi formáty
 
