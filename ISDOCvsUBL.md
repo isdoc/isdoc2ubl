@@ -41,9 +41,41 @@ zda je faktura v cizí měně nebo v korunách. Podle toho se pak při
 mapování do UBL dostanou buď jen částky v cizí měně, nebo jen částky v
 korunách.
 
+### Odkazy na související objednávky
 
+UBL podporuje odkaz pouze na jednu související objednávku (element
+`OrderReference`). Pokud faktura ISDOC obsahuje takových odkazů více,
+není možné je přímo mapovat na UBL.
 
+Alternativní možností je mapovat odkazy na objednávky na element
+`AdditionalDocumentReference`, ale tím se ztratí informace o tom, že
+se jedná odkaz na objednávku.
 
+### Elementy bez ekvivalentu v sémantickém modelu evropské faktury
+
+Několik elementů ISDOC nemá ekvivalent v sémantickém modelu evropské
+faktury, ale UBL je podporuje. Mapování je proto možné a vhodné,
+protože systémy podporující UBL budou schopné tyto údaje použít.
+
+Jedná se o následující elementy:
+
+* `SellerSupplierParty` -- Dodavatel, fakturační adresa
+* `BuyerCustomerParty` -- Odběratel, fakturační adresa
+* `LineExtensionTaxAmount` -- Částka daně na řádku v tuzemské měně
+* `PaymentDueDate` -- Datum splatnosti u jednotlivé platby
+
+### Smlouva uzavřená na dobu neurčitou
+
+Pokud faktura odkazuje na smlouvu, jež byla uzavřena na dobu
+neurčitou, je to v ISDOC indikováno pomocí elementu
+`LastValidDateUnbounded`. Ten nemá v UBL obdobu -- jako vhodné
+mapování lze použít uvedení data `9999-12-31` jako data, do kdy
+smlouva platí.
+
+### Řádkové extenze
+
+ISDOC dovoluje u jednotlivých řádek používat rozšiřující elementy. UBL
+takovou možnost nemá.
 
 ## Elementy ISDOC nepodporované v UBL
 
